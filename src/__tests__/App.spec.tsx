@@ -1,5 +1,5 @@
 // import '@testing-library/jest-dom/extend-expect';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import App from '../App';
 
@@ -27,11 +27,18 @@ describe('App', () => {
 		expect(count.textContent).toContain(1);
 	});
 
-	it('should reset increment count value', () => {
-		const { getByText, rerender } = render(<App />);
-		rerender(<App />);
-		let count = getByText(/count is/);
+	it('rerender <App /> should not change the value of counter', () => {
+		const { rerender } = render(<App />);
+		let count = screen.getByRole('button', { name: /count is/i });
+
 		fireEvent.click(count);
+
 		expect(count.textContent).toContain(1);
+
+		rerender(<App />);
+
+		fireEvent.click(count);
+
+		expect(count.textContent).toContain(2);
 	});
 });
