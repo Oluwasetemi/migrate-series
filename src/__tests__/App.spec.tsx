@@ -1,37 +1,66 @@
 // import '@testing-library/jest-dom/extend-expect';
-import { fireEvent, render } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import App from '../App';
 
 describe('App', () => {
+	beforeEach(() => cleanup());
+
 	it('should renders app properly', () => {
-		const { debug, getByText } = render(<App />);
-		let count = getByText(/count is/);
-		let react = getByText(/learn react/i);
-		let vite = getByText(/hello vite/i);
+		render(<App />);
+
+		let count = screen.getByRole('button', { name: /count/i });
+		let react = screen.getByRole('link', { name: /learn react/i });
+		let vite = screen.getByRole('link', { name: /vite/i });
+
 		expect(count).toBeInTheDocument();
 		expect(react).toBeInTheDocument();
 		expect(vite).toBeInTheDocument();
 	});
 
 	it('should have a count value of 0 when app loads', () => {
-		const { getByText } = render(<App />);
-		let count = getByText(/count is/);
-		expect(count.textContent).toContain(0);
+		render(<App />);
+
+		let count = screen.getByRole('button', { name: /count/i });
+
+		expect(count.textContent).toContain('0');
 	});
 
 	it('should increment count value', () => {
-		const { getByText } = render(<App />);
-		let count = getByText(/count is/);
+		render(<App />);
+		let count = screen.getByRole('button', { name: /count is/i });
+
 		fireEvent.click(count);
-		expect(count.textContent).toContain(1);
+
+		expect(count).toHaveTextContent(1);
+		expect(count.textContent).toContain('1');
 	});
 
-	it('should reset increment count value', () => {
-		const { getByText, rerender } = render(<App />);
-		rerender(<App />);
-		let count = getByText(/count is/);
+	it('rerender <App /> should not change the value of counter', () => {
+		const { rerender } = render(<App />);
+		let count = screen.getByRole('button', { name: /count is/i });
+
 		fireEvent.click(count);
+
 		expect(count.textContent).toContain(1);
+
+		rerender(<App />);
+
+		expect(count.textContent).toContain(1);
+
+		fireEvent.click(count);
+
+		expect(count.textContent).toContain(2);
+	});
+
+	describe('new feature reset', () => {
+		it('should reset the counter to 0 when you click the reset button', () => {
+			const { container, debug } = render(<App />);
+
+			screen.getByRole('button', { name: /reset/i }).click();
+			let count = screen.getByRole('button', { name: /count/i });
+
+			expect(count.textContent).toContain(0);
+		});
 	});
 });
