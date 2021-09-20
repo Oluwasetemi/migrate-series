@@ -13,5 +13,5 @@ module.exports = {
 		'\\.(css|less)$': 'identity-obj-proxy',
 	},
 	// important to expose all the jest-dom api globally in each test
-  setupFilesAfterEnv: ["@testing-library/jest-dom/"]
+	setupFilesAfterEnv: ['<rootDir>/src/__mocks__/matchMediaMock.js', "@testing-library/jest-dom/",]
 };
