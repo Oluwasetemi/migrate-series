@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import useCounter from './hooks/useCounter';
 import useDarkMode from './hooks/useDarkMode';
 import logo from './logo.svg';
 
 function App() {
-	const { count, setCount, increment, decrement, reset } = useCounter(0);
+	const [step, setStep] = useState<number>(0);
+	const { count, setCount, increment, decrement, reset } = useCounter({
+		initialValue: 0,
+		steps: step,
+	});
 	const { isDarkMode, toggle } = useDarkMode(false);
 
 	const handleToggle = () => {
 		toggle();
 		document.documentElement.classList.toggle('light');
+	};
+
+	const handleReset = () => {
+		reset();
+		setStep(0);
 	};
 
 	React.useEffect(() => {
@@ -28,6 +37,15 @@ function App() {
 			<header className="App-header">
 				<img src={logo} className="App-logo" alt="logo" />
 				<p>Hello Vite + React!</p>
+				<p>
+					<input
+						type="number"
+						min="1"
+						value={step}
+						onChange={e => setStep(Number(e.target.value))}
+						onBlur={e => setStep(step)}
+					/>
+				</p>
 				<p>
 					<button type="button" onClick={() => setCount(count => count + 1)}>
 						count is: {count}
